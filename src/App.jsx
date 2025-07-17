@@ -1,22 +1,24 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Toaster } from "react-hot-toast"; // 1. Import Toaster
-import ReturnFormPage from "./pages/ReturnFormPage";
-import DataDisplayPage from "./pages/DataDisplayPage";
-import Navbar from "./components/Navbar";
+import ReturnFormPage from "./pages/ReturnFormPage.jsx";
+import GetDataPage from "./pages/GetDataPage.jsx";
+import Navbar from "./components/Navbar.jsx";
+import "./App.css";
 
 function App() {
   return (
     <Router>
-      {/* 2. Add the Toaster component here. It can go anywhere, but top-level is best. */}
-      <Toaster position="top-center" reverseOrder={false} />
-      <div className="min-h-screen bg-gray-100 font-inter">
-        <Navbar />
-        <main className="container mx-auto p-4 sm:p-6 lg:p-8">
+      <div className="App">
+        <header className="app-header">
+          <h1>Customer Return Risk Dashboard</h1>
+          <Navbar />
+        </header>
+
+        <main className="main-content">
           <Routes>
+            <Route path="/return" element={<ReturnFormPage />} />
+            <Route path="/get_data" element={<GetDataPage />} />
             <Route path="/" element={<ReturnFormPage />} />
-            <Route path="/data" element={<DataDisplayPage />} />
           </Routes>
         </main>
       </div>
