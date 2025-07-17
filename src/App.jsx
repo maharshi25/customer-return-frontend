@@ -1,28 +1,26 @@
+// src/App.jsx
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ReturnFormPage from "./pages/ReturnFormPage.jsx";
-import GetDataPage from "./pages/GetDataPage.jsx";
-import Navbar from "./components/Navbar.jsx";
+import { Routes, Route, Navigate } from "react-router-dom"; // Import Navigate
+import Navbar from "./components/Navbar";
+import GetDataPage from "./pages/GetDataPage";
+import SubmitPage from "./pages/SubmitPage";
 import "./App.css";
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <header className="app-header">
-          <h1>Customer Return Risk Dashboard</h1>
-          <Navbar />
-        </header>
+    <div className="App">
+      <Navbar />
+      <main className="main-content">
+        <Routes>
+          {/* Redirect base URL to /get_data */}
+          <Route path="/" element={<Navigate replace to="/get_data" />} />
 
-        <main className="main-content">
-          <Routes>
-            <Route path="/return" element={<ReturnFormPage />} />
-            <Route path="/get_data" element={<GetDataPage />} />
-            <Route path="/" element={<ReturnFormPage />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+          {/* Define the page routes */}
+          <Route path="/get_data" element={<GetDataPage />} />
+          <Route path="/return" element={<SubmitPage />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
 

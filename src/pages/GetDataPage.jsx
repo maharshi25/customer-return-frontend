@@ -1,109 +1,55 @@
 import React, { useState, useEffect } from "react";
-import "./GetDataPage.css"; // We will create this CSS file next
+import axios from "axios";
+import CustomerList from "../components/CustomerList.jsx";
+import SearchBar from "../components/SearchBar.jsx";
 
-const GetDataPage = () => {
+const API_URL = "https://return-backend-8pj9.onrender.com";
+
+function GetDataPage() {
   const [allCustomers, setAllCustomers] = useState([]);
-  const [customerScore, setCustomerScore] = useState(null);
-  const [searchId, setSearchId] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [displayedCustomers, setDisplayedCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch all customers when the component mounts
   useEffect(() => {
-    const fetchAllData = async () => {
+    const fetchAllCustomerData = async () => {
       try {
-        const response = await fetch(
-          "https://return-backend-8pj9.onrender.com/get_data"
-        );
-        if (!response.ok) throw new Error("Network response was not ok");
-        const data = await response.json();
-        setAllCustomers(data);
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/get_data`);
+        setAllCustomers(response.data);
+        setDisplayedCustomers(response.data);
+        setError(null);
       } catch (err) {
-        console.error("Failed to fetch all customers:", err);
+        setError("Error fetching data. Please refresh in a moment.");
+      } finally {
+        setLoading(false);
       }
     };
-    fetchAllData();
+    fetchAllCustomerData();
   }, []);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchId) return;
-
-    setLoading(true);
-    setError("");
-    setCustomerScore(null);
-
-    try {
-      const response = await fetch(
-        `https://return-backend-8pj9.onrender.com/get_data/${searchId}`
+  const handleSearch = (searchTerm) => {
+    if (!searchTerm.trim()) {
+      setDisplayedCustomers(allCustomers);
+    } else {
+      const filtered = allCustomers.filter((customer) =>
+        customer.customer_id.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || "Customer not found");
-      }
-      const data = await response.json();
-      setCustomerScore(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setDisplayedCustomers(filtered);
     }
   };
 
   return (
-    <div className="get-data-container">
-      <div className="search-section">
-        <h2>Check Single Customer Score</h2>
-        <form onSubmit={handleSearch} className="search-form">
-          <input
-            type="text"
-            value={searchId}
-            onChange={(e) => setSearchId(e.target.value)}
-            placeholder="Enter Customer ID"
-            className="search-input"
-          />
-          <button type="submit" disabled={loading} className="search-button">
-            {loading ? "Searching..." : "Search"}
-          </button>
-        </form>
-        {error && <p className="error-message">{error}</p>}
-        {customerScore && (
-          <div className="score-result">
-            <h3>Score for {customerScore.customer_id}</h3>
-            <p>{customerScore.score?.toFixed(2) ?? "N/A"}</p>
-          </div>
-        )}
-      </div>
-
-      <div className="all-customers-section">
-        <h2>All Customer Scores</h2>
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Customer ID</th>
-                <th>Risk Score</th>
-              </tr>
-            </thead>
-            <tbody>
-              {allCustomers.length > 0 ? (
-                allCustomers.map((customer) => (
-                  <tr key={customer.customer_id}>
-                    <td>{customer.customer_id}</td>
-                    <td>{customer.score?.toFixed(2) ?? "N/A"}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="2">No customer data available.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div className="data-container">
+      <h2>
+        <i className="fas fa-users"></i> Customer Risk Scores
+      </h2>
+      <SearchBar onSearch={handleSearch} />
+      {loading && <p>Loading customers...</p>}
+      {error && <p className="error-message">{error}</p>}
+      {!loading && !error && <CustomerList customers={displayedCustomers} />}
     </div>
   );
-};
+}
 
 export default GetDataPage;
