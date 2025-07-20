@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CustomerList from "../components/CustomerList.jsx";
 import SearchBar from "../components/SearchBar.jsx";
+import CustomerRiskChart from "../components/CustomerRiskChart.jsx";
 
 const API_URL = "https://return-backend-8pj9.onrender.com";
 
@@ -48,6 +49,13 @@ function GetDataPage() {
       {loading && <p>Loading customers...</p>}
       {error && <p className="error-message">{error}</p>}
       {!loading && !error && <CustomerList customers={displayedCustomers} />}
+      {/* New: CustomerID vs Risk Score Graph */}
+      {!loading && !error && allCustomers.length > 0 && (
+        <>
+          <h3 style={{ marginTop: 32 }}>CustomerID vs Risk Score</h3>
+          <CustomerRiskChart data={allCustomers} />
+        </>
+      )}
     </div>
   );
 }

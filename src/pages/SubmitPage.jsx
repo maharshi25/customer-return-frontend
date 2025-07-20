@@ -2,7 +2,7 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import CustomerForm from "../components/CustomerForm";
+import CustomerForm from "../components/CustomerForm.jsx";
 
 const API_URL = "https://return-backend-8pj9.onrender.com";
 
